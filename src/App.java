@@ -1,14 +1,11 @@
 package src;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
-import src.entidades.Habilidades;
-import src.service.HabilidadesCSV;
+import src.interfaces.MenuHabilidades;
 
 public class App {
+    private static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
         iniciar(scanner);
         
         System.out.println("Saindo do sistema. Até mais!");
@@ -53,6 +50,7 @@ public class App {
                 case 0:
                     continuar = false;
                     System.out.println("Saindo...");
+                    clear();
                     break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");

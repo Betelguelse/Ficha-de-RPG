@@ -1,10 +1,14 @@
 package src.entidades;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
+import java.io.FileWriter;
 import java.util.List;
 import java.util.Scanner;
+
+import src.App;
+import src.interfaces.MenuHabilidades;
 
 public class Habilidades {
     
@@ -76,7 +80,7 @@ public class Habilidades {
         this.descricao = descricao;
     }
 
-    static Scanner scanner = new Scanner(System.in);
+    private static Scanner scanner = new Scanner(System.in);
 
     public static void lerHabilidadesCSV(List<Habilidades> habilidades) {
         habilidades.clear();
@@ -104,8 +108,10 @@ public class Habilidades {
     }
 
     public static void exibirHabilidades(List<Habilidades> habilidades) {
-        lerHabilidadesCSV(habilidades);
+        lerHabilidadesCSV(habilidades);  
         try{
+            App.clear();
+            App.cabecalho();
             if(habilidades.isEmpty()){
                 System.out.println("Nenhuma habilidade encontrada");
                 return;
@@ -120,16 +126,58 @@ public class Habilidades {
     }
 
     public static void selecionarHabilidade(List<Habilidades> habilidades){
-        System.out.println("Escolha uma habilidade para ver mais detalhes ou pressione 0 para voltar");
-        int opcao = scanner.nextInt();
-        if(opcao > 0 && opcao <= habilidades.size()){
-            Habilidades escolhida = habilidades.get(opcao - 1);
+        System.out.println("\nEscolha uma habilidade para ver mais detalhes ou pressione 0 para voltar");
+        int tecla = scanner.nextInt();
+        if(tecla > 0 && tecla <= habilidades.size()){
+            Habilidades escolhida = habilidades.get(tecla - 1);
             System.out.println("\n" + escolhida.toString());
-        }else if(opcao == 0){
-            System.out.println("Voltando ao menu");
+        }else if(tecla == 0){
+            App.clear();
+            MenuHabilidades.menu(scanner);
         }else{
             System.out.println("Opção inválida");
         }
+    }
+
+    public static void adicionarHabilidade(List<Habilidades> habilidades){
+        App.clear();
+        App.cabecalho();
+        System.out.println("Adicionar nova habilidade");
+        StringBuilder novaHabilidade = new StringBuilder();
+
+        System.out.print("Nome: ");
+        novaHabilidade.append(scanner.next());
+        novaHabilidade.append(";");
+        
+        System.out.print("Nível: ");
+        novaHabilidade.append(scanner.next());
+        novaHabilidade.append(";");
+
+        System.out.print("Tipo: ");
+        novaHabilidade.append(scanner.next());
+        novaHabilidade.append(";");
+
+        System.out.print("Recarga: ");
+        novaHabilidade.append(scanner.next());
+        novaHabilidade.append(";");
+
+        System.out.print("Custo: ");
+        novaHabilidade.append(scanner.next());
+        novaHabilidade.append(";");
+
+        System.out.print("Descrição: ");
+        novaHabilidade.append(scanner.next());
+        
+        String caminho = "habilidades.csv";
+        try(FileWriter writer = new FileWriter(caminho, true)){  
+            writer.write(novaHabilidade.toString() + "\n"); 
+        } catch (Exception e) {
+            System.out.println("Erro ao adicionar habilidade: " + e.getMessage());
+            return;
+        }
+        
+        System.out.println("Habilidade adicionada com sucesso!");
+        MenuHabilidades.menu(scanner);
     }
 
     @Override
@@ -141,4 +189,4 @@ public class Habilidades {
                 "\nCusto: " + custo +
                 "\nDescrição: " + descricao);
     }
-} 
+}
