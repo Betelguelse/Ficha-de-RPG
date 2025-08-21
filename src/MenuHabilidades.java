@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import src.entidades.Habilidades;
-import src.service.HabilidadesCSV;
 
 public class MenuHabilidades implements IMenu {
     Scanner scanner = new Scanner(System.in);
@@ -24,19 +23,16 @@ public class MenuHabilidades implements IMenu {
         while(condicao){
             switch (scanner.nextInt()) {
             case 1:
-                HabilidadesCSV.exibirHabilidades(habilidades);
+                Habilidades.exibirHabilidades(habilidades);
                 break;
             case 0:
                 condicao = false;
                 App.iniciar(scanner);
             default:
                 break;
-        }
+            }
         }
         
     }
-
-
-
     
 }

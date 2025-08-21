@@ -45,17 +45,18 @@ public class HabilidadesCSV {
                 System.out.println(  i + " - Nome: " + habilidade.getNome());
             }            
         }
+        selecionarHabilidade(habilidades);
     }
 
     public static void selecionarHabilidade(List<Habilidades> habilidades){
         lerHabilidadesCSV(habilidades);
         System.out.println("Escolha uma habilidade para ver mais detalhes ou pressione 0 para voltar");
-            int opcao = scanner.nextInt();
-            if(opcao > 0 && opcao <= habilidades.size()){
-                Habilidades escolhida = habilidades.get(opcao - 1);
-                escolhida.toString();
-            }else{
-                System.out.println("Opção inválida");
-            }
+        int opcao = scanner.nextInt();
+        if(opcao > 0 && opcao <= habilidades.size()){
+            Habilidades escolhida = habilidades.get(opcao);
+            escolhida.toString();
+        }else{
+            System.out.println("Opção inválida");
+        }
     }
 }

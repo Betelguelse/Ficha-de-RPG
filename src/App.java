@@ -26,7 +26,7 @@ public class App {
             cabecalho();
             menuAtributos();
             menuInterativo();
-            
+
             System.out.println("Selecione uma opção:");
             entradaInvalida(scanner);
 
@@ -119,10 +119,6 @@ public class App {
         
         voltar(new Scanner(System.in));
     }   
-
-    public static void menuHabilidades(Scanner scanner){
-        
-    }
 
     public static void clear() {
         try {
