@@ -1,11 +1,15 @@
 package src.entidades;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 
 import src.App;
 import src.interfaces.MenuHabilidades;
@@ -80,7 +84,15 @@ public class Habilidades {
         this.descricao = descricao;
     }
 
-    private static Scanner scanner = new Scanner(System.in);
+    private static void voltarMenuHabilidades() {
+        System.out.println("Aperte 0 para voltar ao menu de habilidades");
+        if(Integer.parseInt(scanner.nextLine()) == 0 || scanner.nextLine() == ""){
+            App.clear();
+            MenuHabilidades.menu(scanner);
+        }
+    }
+
+    private static Scanner scanner = new Scanner( System.in);
 
     public static void lerHabilidadesCSV(List<Habilidades> habilidades) {
         habilidades.clear();
@@ -118,25 +130,28 @@ public class Habilidades {
             }
             for(int i = 0; i < habilidades.size() ; i++){
                 System.out.println((i + 1) + " - Nome: " + habilidades.get(i).getNome());
-            }            
-            selecionarHabilidade(habilidades);
+            }          
         }catch (Exception e){
             System.out.println("Erro ao exibir habilidades: " + e.getMessage());
         }
     }
 
     public static void selecionarHabilidade(List<Habilidades> habilidades){
+        exibirHabilidades(habilidades);
         System.out.println("\nEscolha uma habilidade para ver mais detalhes ou pressione 0 para voltar");
-        int tecla = scanner.nextInt();
+        int tecla = Integer.parseInt(scanner.nextLine());
         if(tecla > 0 && tecla <= habilidades.size()){
             Habilidades escolhida = habilidades.get(tecla - 1);
-            System.out.println("\n" + escolhida.toString());
-        }else if(tecla == 0){
-            App.clear();
-            MenuHabilidades.menu(scanner);
+            System.out.println("\n" + escolhida.toString() + "\n");
+            voltarMenuHabilidades();
         }else{
             System.out.println("Opção inválida");
         }
+        if (tecla == 0 || scanner.nextLine() == ""){
+            App.clear();
+            MenuHabilidades.menu(scanner);  
+        }
+        voltarMenuHabilidades();
     }
 
     public static void adicionarHabilidade(List<Habilidades> habilidades){
@@ -146,27 +161,36 @@ public class Habilidades {
         StringBuilder novaHabilidade = new StringBuilder();
 
         System.out.print("Nome: ");
-        novaHabilidade.append(scanner.next());
-        novaHabilidade.append(";");
-        
+        String nome = scanner.nextLine();
+
+        for(Habilidades habilidade : habilidades) {
+            if(habilidade.getNome().equalsIgnoreCase(nome)) {
+                System.err.println("Nome de habilidade já existente. Por favor, escolha outro nome.");
+                return;
+            }
+        }
+        novaHabilidade.append(nome).append(";");
+
         System.out.print("Nível: ");
-        novaHabilidade.append(scanner.next());
-        novaHabilidade.append(";");
+        int nivel = scanner.nextInt();
+        novaHabilidade.append(nivel).append(";");
+        scanner.nextLine(); 
 
         System.out.print("Tipo: ");
-        novaHabilidade.append(scanner.next());
-        novaHabilidade.append(";");
+        String tipo = scanner.nextLine();
+        novaHabilidade.append(tipo).append(";");
 
         System.out.print("Recarga: ");
-        novaHabilidade.append(scanner.next());
-        novaHabilidade.append(";");
+        String recarga = scanner.nextLine();
+        novaHabilidade.append(recarga).append(";");
 
         System.out.print("Custo: ");
-        novaHabilidade.append(scanner.next());
-        novaHabilidade.append(";");
+        String custo = scanner.nextLine();
+        novaHabilidade.append(custo).append(";");
 
         System.out.print("Descrição: ");
-        novaHabilidade.append(scanner.next());
+        String desc = scanner.nextLine();
+        novaHabilidade.append(desc);
         
         String caminho = "habilidades.csv";
         try(FileWriter writer = new FileWriter(caminho, true)){  
@@ -177,7 +201,76 @@ public class Habilidades {
         }
         
         System.out.println("Habilidade adicionada com sucesso!");
-        MenuHabilidades.menu(scanner);
+        voltarMenuHabilidades();   
+    }
+
+    public static void editarHabilidade(List<Habilidades> habilidades) {
+        
+    }
+
+    public static void excluirHabilidade(List<Habilidades> habilidades) {
+        lerHabilidadesCSV(habilidades);
+
+        if (habilidades.isEmpty()) {
+            System.out.println("Nenhuma habilidade para excluir.");
+            return;
+        }
+
+        // Mostra a lista numerada
+        exibirHabilidades(habilidades);
+
+        System.out.println("\nDigite o número da habilidade que deseja excluir (0 para cancelar):");
+        String entrada = scanner.nextLine();
+        int opcao;
+        try {
+            opcao = Integer.parseInt(entrada.trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Entrada inválida.");
+            return;
+        }
+
+        if (opcao == 0) {
+            System.out.println("Operação cancelada.");
+            voltarMenuHabilidades();
+        }
+
+        if (opcao < 1 || opcao > habilidades.size()) {
+            System.out.println("Número inválido.");
+            voltarMenuHabilidades();
+        }
+
+        Habilidades removida = habilidades.remove(opcao - 1);
+
+        // Lê o cabeçalho do CSV (se existir) para reescrever preservando-o
+        String header = null;
+        File arquivo = new File("habilidades.csv");
+        if (arquivo.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
+                header = br.readLine(); // pode ser null se arquivo vazio
+            } catch (IOException e) {
+                // se falhar, continua sem cabeçalho
+                header = null;
+            }
+        }
+
+        // Reescreve o arquivo com a lista atualizada
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo, false))) {
+            if (header != null && !header.isBlank()) {
+                bw.write(header);
+                bw.newLine();
+            }
+            for (Habilidades h : habilidades) {
+                // Ajuste os campos na mesma ordem do CSV
+                bw.write(h.getNome() + ";" + h.getNivel() + ";" + h.getTipo() + ";" + h.getRecarga() + ";" + h.getCusto() + ";" + h.getDescricao());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar arquivo: " + e.getMessage());
+            return;
+        }
+
+        System.out.println("Habilidade '" + removida.getNome() + "' removida com sucesso.");
+        voltarMenuHabilidades();
     }
 
     @Override

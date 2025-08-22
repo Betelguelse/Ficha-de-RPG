@@ -27,7 +27,7 @@ public class App {
             System.out.println("Selecione uma opção:");
             entradaInvalida(scanner);
 
-            switch(opcao = scanner.nextInt()){
+            switch(opcao = Integer.parseInt(scanner.nextLine())) {
                 case 1:
                     System.out.println("Editar atributos");
                     menuEditarAtributos(scanner);

@@ -8,7 +8,7 @@ import src.App;
 import src.entidades.Habilidades;
 
 public class MenuHabilidades implements IMenu {
-    private static Scanner scanner = new Scanner(System.in);
+    
     static List<Habilidades> habilidades = new ArrayList<>();
 
     public static void menu(Scanner scanner){
@@ -24,10 +24,10 @@ public class MenuHabilidades implements IMenu {
         System.out.println("0 - Voltar");
 
         while(condicao){
-            switch (scanner.nextInt()) {
+            switch (Integer.parseInt(scanner.nextLine())) {
             case 1:
                 App.clear();
-                Habilidades.exibirHabilidades(habilidades);
+                Habilidades.selecionarHabilidade(habilidades);
                 break;
             case 2:
                 App.clear();
@@ -36,6 +36,8 @@ public class MenuHabilidades implements IMenu {
             case 3:
                 break;
             case 4:
+                App.clear();
+                Habilidades.excluirHabilidade(habilidades);
                 break;
             case 0:
                 condicao = false;
