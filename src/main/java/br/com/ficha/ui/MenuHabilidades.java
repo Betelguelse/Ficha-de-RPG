@@ -47,6 +47,9 @@ public class MenuHabilidades {
         System.out.print("Tipo: ");
         String tipo = scanner.nextLine();
 
+        System.out.print("Alcance: ");
+        String alcance = scanner.nextLine();
+
         System.out.print("Recarga: ");
         String recarga = scanner.nextLine();
 
@@ -56,7 +59,7 @@ public class MenuHabilidades {
         System.out.print("Descricao: ");
         String descricao = scanner.nextLine();
 
-        return new Habilidade(nome, nivel, tipo, recarga, custo, descricao);
+        return new Habilidade(nome, nivel, tipo, alcance, recarga, custo, descricao);
     }
 
     public int lerOpcao() {

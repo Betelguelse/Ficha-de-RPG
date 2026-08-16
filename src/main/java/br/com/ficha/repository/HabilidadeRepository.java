@@ -12,7 +12,7 @@ import java.util.List;
 import br.com.ficha.model.Habilidade;
 
 public class HabilidadeRepository {
-    private static final String CABECALHO = "nome;nivel;tipo;recarga;custo;descricao";
+    private static final String CABECALHO = "nome;nivel;tipo;alcance;recarga;custo;descricao";
     private final Path caminhoArquivo;
 
     public HabilidadeRepository() {
@@ -35,11 +35,22 @@ public class HabilidadeRepository {
 
             while ((linha = reader.readLine()) != null) {
                 String[] valores = linha.split(";", -1);
-                if (valores.length == 6) {
+                if (valores.length == 7) {
                     habilidades.add(new Habilidade(
                         valores[0],
                         Integer.parseInt(valores[1]),
                         valores[2],
+                        valores[3],
+                        valores[4],
+                        valores[5],
+                        valores[6]
+                    ));
+                } else if (valores.length == 6) {
+                    habilidades.add(new Habilidade(
+                        valores[0],
+                        Integer.parseInt(valores[1]),
+                        valores[2],
+                        "",
                         valores[3],
                         valores[4],
                         valores[5]

@@ -4,14 +4,16 @@ public class Habilidade {
     private String nome;
     private int nivel;
     private String tipo;
+    private String alcance;
     private String recarga;
     private String custo;
     private String descricao;
 
-    public Habilidade(String nome, int nivel, String tipo, String recarga, String custo, String descricao) {
+    public Habilidade(String nome, int nivel, String tipo, String alcance, String recarga, String custo, String descricao) {
         this.nome = nome;
         this.nivel = nivel;
         this.tipo = tipo;
+        this.alcance = alcance;
         this.recarga = recarga;
         this.custo = custo;
         this.descricao = descricao;
@@ -29,6 +31,10 @@ public class Habilidade {
         return tipo;
     }
 
+    public String getAlcance() {
+        return alcance;
+    }
+
     public String getRecarga() {
         return recarga;
     }
@@ -42,7 +48,7 @@ public class Habilidade {
     }
 
     public String paraLinhaCsv() {
-        return String.join(";", nome, String.valueOf(nivel), tipo, recarga, custo, descricao);
+        return String.join(";", nome, String.valueOf(nivel), tipo, alcance, recarga, custo, descricao);
     }
 
     @Override
@@ -50,6 +56,7 @@ public class Habilidade {
         return "Nome: " + nome + "\n"
             + "Nivel: " + nivel + "\n"
             + "Tipo: " + tipo + "\n"
+            + "Alcance: " + alcance + "\n"
             + "Recarga: " + recarga + "\n"
             + "Custo: " + custo + "\n"
             + "Descricao: " + descricao;
