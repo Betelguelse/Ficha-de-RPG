@@ -37,22 +37,21 @@ public class App {
 
             switch (opcao) {
                 case 1:
-                    System.out.println("Editar atributos");
+                    clear();
                     menuEditarAtributos(scanner);
                     break;
                 case 2:
-                    System.out.println("Itens");
+                    abrirMenuItens(scanner);
                     break;
                 case 3:
-                    System.out.println("Equipamentos");
+                    abrirMenuEquipamentos(scanner);
                     break;
                 case 4:
-                    System.out.println("Habilidades");
                     clear();
                     abrirMenuHabilidades(scanner);
                     break;
                 case 5:
-                    System.out.println("Anotacoes");
+                    clear();
                     abrirMenuAnotacoes(scanner);
                     break;
                 case 0:
@@ -141,6 +140,7 @@ public class App {
             int opcao = lerOpcao(scanner);
             if (opcao == 0) {
                 noMenu = false;
+                clear();
             } else {
                 editarAtributo(scanner, ficha, opcao);
                 fichaService.salvarFicha(ficha);
@@ -247,6 +247,28 @@ public class App {
         controller.iniciar();
     }
 
+    private static void abrirMenuItens(Scanner scanner) {
+        clear();
+        cabecalho();
+        System.out.println("Area de itens");
+        System.out.println("Em breve voce podera gerenciar os itens da ficha aqui.");
+        System.out.println();
+        System.out.println("Pressione Enter para voltar...");
+        scanner.nextLine();
+        clear();
+    }
+
+    private static void abrirMenuEquipamentos(Scanner scanner) {
+        clear();
+        cabecalho();
+        System.out.println("Area de equipamentos");
+        System.out.println("Em breve voce podera gerenciar os equipamentos da ficha aqui.");
+        System.out.println();
+        System.out.println("Pressione Enter para voltar...");
+        scanner.nextLine();
+        clear();
+    }
+
     private static void abrirMenuAnotacoes(Scanner scanner) {
         clear();
         cabecalho();
@@ -255,5 +277,6 @@ public class App {
         System.out.println();
         System.out.println("Pressione Enter para voltar...");
         scanner.nextLine();
+        clear();
     }
 }

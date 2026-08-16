@@ -44,6 +44,7 @@ public class HabilidadesController {
                     excluirHabilidade();
                     break;
                 case 0:
+                    limparTela.run();
                     executando = false;
                     break;
                 default:
@@ -63,12 +64,17 @@ public class HabilidadesController {
             int opcao = menuHabilidades.lerNumeroHabilidade("\nEscolha uma habilidade para ver detalhes ou 0 para voltar:");
             if (opcao > 0 && opcao <= habilidades.size()) {
                 menuHabilidades.exibirDetalhes(habilidadeService.buscarPorIndice(opcao - 1));
+                aguardarContinuacao();
+                return;
+            } else if (opcao == 0) {
+                limparTela.run();
+                return;
             } else if (opcao != 0) {
                 menuHabilidades.exibirMensagem("Opcao invalida.");
+                aguardarContinuacao();
+                return;
             }
         }
-
-        aguardarContinuacao();
     }
 
     private void adicionarHabilidade() {
@@ -99,6 +105,7 @@ public class HabilidadesController {
 
         int opcao = menuHabilidades.lerNumeroHabilidade("\nDigite o numero da habilidade que deseja excluir ou 0 para cancelar:");
         if (opcao == 0) {
+            limparTela.run();
             return;
         }
 
