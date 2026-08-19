@@ -38,26 +38,27 @@ public class MenuHabilidades {
 
     public Habilidade lerNovaHabilidade() {
         System.out.println("Adicionar nova habilidade");
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
+
+        System.out.println("Nome: ");
+        String nome = lerStringVazia();
 
         System.out.print("Nivel: ");
         int nivel = lerInteiro();
 
         System.out.print("Tipo: ");
-        String tipo = scanner.nextLine();
+        String tipo = lerStringVazia();
 
         System.out.print("Alcance: ");
-        String alcance = scanner.nextLine();
+        String alcance = lerStringVazia();
 
         System.out.print("Recarga: ");
-        String recarga = scanner.nextLine();
+        String recarga = lerStringVazia();
 
         System.out.print("Custo: ");
-        String custo = scanner.nextLine();
+        String custo = lerStringVazia();
 
         System.out.print("Descricao: ");
-        String descricao = scanner.nextLine();
+        String descricao = lerStringVazia();
 
         return new Habilidade(nome, nivel, tipo, alcance, recarga, custo, descricao);
     }
@@ -77,6 +78,15 @@ public class MenuHabilidades {
 
     public void aguardarEnter() {
         scanner.nextLine();
+    }
+
+    private String lerStringVazia() {
+        String entrada = scanner.nextLine().trim();
+        while (entrada.isEmpty()) {
+            System.out.println("Entrada invalida. Digite um texto válido.");
+            entrada = scanner.nextLine().trim();
+        }
+        return entrada;
     }
 
     private int lerInteiro() {

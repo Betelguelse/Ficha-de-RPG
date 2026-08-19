@@ -11,10 +11,13 @@ import br.com.ficha.service.HabilidadeService;
 import br.com.ficha.ui.MenuHabilidades;
 
 public class App {
+    private static final int TERMINAL_ROWS = 20;
+    private static final int TERMINAL_COLUMNS = 72;
     private static final Scanner scanner = new Scanner(System.in);
     private static final FichaService fichaService = new FichaService(new FichaRepository());
 
     public static void main(String[] args) {
+        ajustarTamanhoTerminal();
         iniciar(scanner);
 
         System.out.println("Saindo do sistema. Ate mais!");
@@ -67,7 +70,7 @@ public class App {
 
     public static void cabecalho() {
         System.out.println("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-        System.out.println("Bem-vindo ao sistema de ficha");
+        System.out.println("            Bem-vindo ao sistema de ficha");
         System.out.println("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     }
 
@@ -232,11 +235,22 @@ public class App {
             if (System.getProperty("os.name").contains("Windows")) {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
             } else {
-                new ProcessBuilder("clear").inheritIO().start().waitFor();
+                System.out.print("\033[3J\033[H\033[2J");
+                System.out.flush();
             }
         } catch (Exception e) {
             System.out.println("Nao foi possivel limpar a tela!");
         }
+    }
+
+    private static void ajustarTamanhoTerminal() {
+        if (System.console() == null) {
+            return;
+        }
+
+        // ANSI CSI 8 resizes the terminal window in terminals that support it.
+        System.out.printf("\033[8;%d;%dt", TERMINAL_ROWS, TERMINAL_COLUMNS);
+        System.out.flush();
     }
 
     private static void abrirMenuHabilidades(Scanner scanner) {
