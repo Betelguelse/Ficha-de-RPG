@@ -12,13 +12,7 @@ public class Ficha {
     private int moedaBronze;
     private int moedaPrata;
     private int moedaOuro;
-    private int inteligencia;
-    private int sabedoria;
-    private int forca;
-    private int destreza;
-    private int constituicao;
-    private int carisma;
-    private int bonusProficiencia;
+    private final Atributos atributos;
 
     public Ficha(
         String nome,
@@ -51,13 +45,7 @@ public class Ficha {
         this.moedaBronze = moedaBronze;
         this.moedaPrata = moedaPrata;
         this.moedaOuro = moedaOuro;
-        this.inteligencia = inteligencia;
-        this.sabedoria = sabedoria;
-        this.forca = forca;
-        this.destreza = destreza;
-        this.constituicao = constituicao;
-        this.carisma = carisma;
-        this.bonusProficiencia = bonusProficiencia;
+        this.atributos = new Atributos(inteligencia, sabedoria, forca, destreza, constituicao, carisma, bonusProficiencia);
     }
 
     public static Ficha padrao() {
@@ -153,59 +141,63 @@ public class Ficha {
     }
 
     public int getInteligencia() {
-        return inteligencia;
+        return atributos.getInteligencia();
+    }
+
+    public Atributos getAtributos() {
+        return atributos;
     }
 
     public void setInteligencia(int inteligencia) {
-        this.inteligencia = inteligencia;
+        atributos.setInteligencia(inteligencia);
     }
 
     public int getSabedoria() {
-        return sabedoria;
+        return atributos.getSabedoria();
     }
 
     public void setSabedoria(int sabedoria) {
-        this.sabedoria = sabedoria;
+        atributos.setSabedoria(sabedoria);
     }
 
     public int getForca() {
-        return forca;
+        return atributos.getForca();
     }
 
     public void setForca(int forca) {
-        this.forca = forca;
+        atributos.setForca(forca);
     }
 
     public int getDestreza() {
-        return destreza;
+        return atributos.getDestreza();
     }
 
     public void setDestreza(int destreza) {
-        this.destreza = destreza;
+        atributos.setDestreza(destreza);
     }
 
     public int getConstituicao() {
-        return constituicao;
+        return atributos.getConstituicao();
     }
 
     public void setConstituicao(int constituicao) {
-        this.constituicao = constituicao;
+        atributos.setConstituicao(constituicao);
     }
 
     public int getCarisma() {
-        return carisma;
+        return atributos.getCarisma();
     }
 
     public void setCarisma(int carisma) {
-        this.carisma = carisma;
+        atributos.setCarisma(carisma);
     }
 
     public int getBonusProficiencia() {
-        return bonusProficiencia;
+        return atributos.getBonusProficiencia();
     }
 
     public void setBonusProficiencia(int bonusProficiencia) {
-        this.bonusProficiencia = bonusProficiencia;
+        atributos.setBonusProficiencia(bonusProficiencia);
     }
 
     public String paraLinhaCsv() {
@@ -221,13 +213,13 @@ public class Ficha {
             String.valueOf(moedaBronze),
             String.valueOf(moedaPrata),
             String.valueOf(moedaOuro),
-            String.valueOf(inteligencia),
-            String.valueOf(sabedoria),
-            String.valueOf(forca),
-            String.valueOf(destreza),
-            String.valueOf(constituicao),
-            String.valueOf(carisma),
-            String.valueOf(bonusProficiencia)
+            String.valueOf(atributos.getInteligencia()),
+            String.valueOf(atributos.getSabedoria()),
+            String.valueOf(atributos.getForca()),
+            String.valueOf(atributos.getDestreza()),
+            String.valueOf(atributos.getConstituicao()),
+            String.valueOf(atributos.getCarisma()),
+            String.valueOf(atributos.getBonusProficiencia())
         );
     }
 

@@ -20,37 +20,87 @@ public class EquipamentoRepository {
         try {
             List<String> linhas = Files.readAllLines(equipamentos);
             for (int i = 1; i < linhas.size(); i++) {
-                String[] v = linhas.get(i).split(";", -1);
-                if (v.length == 9) resultado.add(new Equipamento(v[0], v[1], v[2], v[3], v[4], v[5], inteiro(v[6]), v[7], v[8]));
+                String[] valores = linhas.get(i).split(";", -1);
+                if (valores.length == 9) {
+                    resultado.add(new Equipamento(
+                        valores[0],
+                        valores[1],
+                        valores[2],
+                        valores[3],
+                        valores[4],
+                        valores[5],
+                        inteiro(valores[6]),
+                        valores[7],
+                        valores[8]
+                    ));
+                }
             }
             return resultado;
-        } catch (IOException e) { throw new IllegalStateException("Erro ao ler equipamentos.", e); }
+        } catch (IOException e) {
+            throw new IllegalStateException("Erro ao ler equipamentos.", e);
+        }
     }
 
     public void salvar(List<Equipamento> lista) {
         preparar(equipamentos, CABECALHO);
-        List<String> linhas = new ArrayList<>(); linhas.add(CABECALHO);
-        for (Equipamento e : lista) linhas.add(e.paraLinhaCsv());
-        try { Files.write(equipamentos, linhas); } catch (IOException e) { throw new IllegalStateException("Erro ao salvar equipamentos.", e); }
+        List<String> linhas = new ArrayList<>();
+        linhas.add(CABECALHO);
+        for (Equipamento equipamento : lista) {
+            linhas.add(equipamento.paraLinhaCsv());
+        }
+        try {
+            Files.write(equipamentos, linhas);
+        } catch (IOException e) {
+            throw new IllegalStateException("Erro ao salvar equipamentos.", e);
+        }
     }
 
     public boolean[] carregarPermissoes() {
         preparar(permissoes, "leve;media;pesada");
         try {
             List<String> linhas = Files.readAllLines(permissoes);
-            if (linhas.size() < 2) return new boolean[] {false, false, false};
-            String[] v = linhas.get(1).split(";", -1);
-            return new boolean[] {v.length > 0 && Boolean.parseBoolean(v[0]), v.length > 1 && Boolean.parseBoolean(v[1]), v.length > 2 && Boolean.parseBoolean(v[2])};
-        } catch (IOException e) { throw new IllegalStateException("Erro ao ler permissoes.", e); }
+            if (linhas.size() < 2) {
+                return new boolean[] {false, false, false};
+            }
+            String[] valores = linhas.get(1).split(";", -1);
+            return new boolean[] {
+                valores.length > 0 && Boolean.parseBoolean(valores[0]),
+                valores.length > 1 && Boolean.parseBoolean(valores[1]),
+                valores.length > 2 && Boolean.parseBoolean(valores[2])
+            };
+        } catch (IOException e) {
+            throw new IllegalStateException("Erro ao ler permissões.", e);
+        }
     }
 
-    public void salvarPermissoes(boolean[] p) {
+    public void salvarPermissoes(boolean[] permissoesArmadura) {
         preparar(permissoes, "leve;media;pesada");
-        try { Files.write(permissoes, List.of("leve;media;pesada", p[0] + ";" + p[1] + ";" + p[2])); } catch (IOException e) { throw new IllegalStateException("Erro ao salvar permissoes.", e); }
+        String valores = permissoesArmadura[0] + ";"
+            + permissoesArmadura[1] + ";"
+            + permissoesArmadura[2];
+        try {
+            Files.write(permissoes, List.of("leve;media;pesada", valores));
+        } catch (IOException e) {
+            throw new IllegalStateException("Erro ao salvar permissões.", e);
+        }
     }
 
     private void preparar(Path arquivo, String cabecalho) {
-        try { Files.createDirectories(arquivo.getParent()); if (!Files.exists(arquivo)) Files.write(arquivo, List.of(cabecalho)); } catch (IOException e) { throw new IllegalStateException("Erro ao preparar arquivo.", e); }
+        try {
+            Files.createDirectories(arquivo.getParent());
+            if (!Files.exists(arquivo)) {
+                Files.write(arquivo, List.of(cabecalho));
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Erro ao preparar arquivo.", e);
+        }
     }
-    private int inteiro(String valor) { try { return Integer.parseInt(valor); } catch (NumberFormatException e) { return 0; } }
+
+    private int inteiro(String valor) {
+        try {
+            return Integer.parseInt(valor);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 }
