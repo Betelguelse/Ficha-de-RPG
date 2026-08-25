@@ -1,0 +1,43 @@
+name: Gerar executável Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    name: Gerar FichaEmCmd.exe
+    runs-on: windows-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v6
+
+      - name: Configurar Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Instalar WiX Toolset
+        shell: powershell
+        run: choco install wixtoolset --no-progress --yes
+
+      - name: Gerar executável
+        shell: powershell
+        run: mvn --batch-mode clean package -Ppackage-windows
+
+      - name: Disponibilizar executável
+        uses: actions/upload-artifact@v7
+        with:
+          name: FichaEmCmd-Windows
+          path: target/windows/*.exe
+          if-no-files-found: error
+          retention-days: 30

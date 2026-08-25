@@ -56,6 +56,20 @@ Saida esperada:
 target/windows/FichaEmCmd.exe
 ```
 
+## Gerar o executavel pelo GitHub
+
+O workflow `.github/workflows/build-windows.yml` gera o `.exe` automaticamente
+ao enviar alteracoes para as branches `main` ou `master`.
+
+Tambem e possivel executar manualmente:
+
+1. Abra a aba `Actions` do repositorio no GitHub.
+2. Selecione `Gerar executavel Windows`.
+3. Clique em `Run workflow`.
+4. Quando finalizar, baixe o artefato `FichaEmCmd-Windows`.
+
+O artefato fica disponivel por 30 dias.
+
 ## Observacao importante
 
 O `jpackage` nao gera executaveis de outro sistema operacional. Isso significa:

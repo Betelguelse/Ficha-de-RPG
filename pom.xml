@@ -115,6 +115,7 @@
                                         <argument>${main.class}</argument>
                                         <argument>--type</argument>
                                         <argument>exe</argument>
+                                        <argument>--win-console</argument>
                                         <argument>--dest</argument>
                                         <argument>${project.build.directory}/windows</argument>
                                     </arguments>
