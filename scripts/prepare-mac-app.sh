@@ -32,9 +32,7 @@ set -eu
 
 SCRIPT_DIR="\$(cd "\$(dirname "\$0")" && pwd)"
 "\$SCRIPT_DIR/${LAUNCHER_NAME}-bin"
-printf '\\n'
-printf 'Pressione Enter para fechar...'
-read dummy
+/usr/bin/osascript -e 'tell application "Terminal" to close front window' >/dev/null 2>&1 || true
 EOF
 
 cat > "$ORIGINAL_BIN" <<EOF

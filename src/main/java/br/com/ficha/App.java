@@ -32,7 +32,7 @@ public class App {
             Ficha ficha = fichaService.carregarFicha();
             clear();
             cabecalho();
-            menuAtributos(ficha);
+            menuDadosPersonagem(ficha);
             menuInterativo();
 
             System.out.println("Selecione uma opcao:");
@@ -41,19 +41,23 @@ public class App {
             switch (opcao) {
                 case 1:
                     clear();
-                    menuEditarAtributos(scanner);
+                    menuEditarDadosPersonagem(scanner);
                     break;
                 case 2:
-                    abrirMenuItens(scanner);
+                    clear();
+                    abrirMenuAtributos(scanner);
                     break;
                 case 3:
-                    abrirMenuEquipamentos(scanner);
+                    abrirMenuItens(scanner);
                     break;
                 case 4:
+                    abrirMenuEquipamentos(scanner);
+                    break;
+                case 5:
                     clear();
                     abrirMenuHabilidades(scanner);
                     break;
-                case 5:
+                case 6:
                     clear();
                     abrirMenuAnotacoes(scanner);
                     break;
@@ -85,7 +89,9 @@ public class App {
         }
     }
 
-    public static void menuAtributos(Ficha ficha) {
+    public static void menuDadosPersonagem(Ficha ficha) {
+        System.out.println("DADOS PERSONAGEM");
+        System.out.println();
         System.out.println("Nome: " + ficha.getNome());
         System.out.println("Idade: " + ficha.getIdade());
         System.out.println("Sexo: " + ficha.getSexo());
@@ -111,22 +117,25 @@ public class App {
     }
 
     public static void menuInterativo() {
-        System.out.println("1 - Editar atributos");
-        System.out.println("2 - Itens");
-        System.out.println("3 - Equipamentos");
-        System.out.println("4 - Habilidades");
-        System.out.println("5 - Anotações");
+        System.out.println("1 - Editar dados personagem");
+        System.out.println("2 - Atributos");
+        System.out.println("3 - Itens");
+        System.out.println("4 - Equipamentos");
+        System.out.println("5 - Habilidades");
+        System.out.println("6 - Anotações");
         System.out.println("0 - Sair");
     }
 
-    public static void menuEditarAtributos(Scanner scanner) {
+    public static void menuEditarDadosPersonagem(Scanner scanner) {
         boolean noMenu = true;
         Ficha ficha = fichaService.carregarFicha();
 
         while (noMenu) {
             clear();
             cabecalho();
-            menuAtributos(ficha);
+            menuDadosPersonagem(ficha);
+            System.out.println("Editar Dados Personagem");
+            System.out.println();
             System.out.println("1 - Editar nome");
             System.out.println("2 - Editar idade");
             System.out.println("3 - Editar sexo");
@@ -259,6 +268,107 @@ public class App {
         MenuHabilidades view = new MenuHabilidades(scanner);
         HabilidadesController controller = new HabilidadesController(service, view, App::clear, App::cabecalho);
         controller.iniciar();
+    }
+
+    private static void abrirMenuAtributos(Scanner scanner) {
+        boolean noMenu = true;
+        Ficha ficha = fichaService.carregarFicha();
+
+        while (noMenu) {
+            clear();
+            cabecalho();
+            exibirAtributos(ficha);
+            System.out.println("Editar Atributos");
+            System.out.println();
+            System.out.println("1 - Editar Inteligência");
+            System.out.println("2 - Editar sabedoria");
+            System.out.println("3 - Editar Força");
+            System.out.println("4 - Editar destreza");
+            System.out.println("5 - Editar Constituição");
+            System.out.println("6 - Editar carisma");
+            System.out.println("7 - Editar Bônus de Proficiência");
+            System.out.println("0 - Voltar");
+
+            int opcao = lerOpcao(scanner);
+            if (opcao == 0) {
+                noMenu = false;
+                clear();
+            } else {
+                editarAtributoPersonagem(scanner, ficha, opcao);
+                fichaService.salvarFicha(ficha);
+                System.out.println("Pressione Enter para continuar...");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private static void exibirAtributos(Ficha ficha) {
+        System.out.println("ATRIBUTOS");
+        System.out.println();
+        System.out.println("+----------------------------------+");
+        System.out.printf("| BÔNUS DE PROFICIÊNCIA: %-8d |%n", ficha.getBonusProficiencia());
+        System.out.println("+----------------------------------+");
+        System.out.println();
+        System.out.println("Inteligência: " + ficha.getInteligencia());
+        System.out.println("Sabedoria: " + ficha.getSabedoria());
+        System.out.println("Força: " + ficha.getForca());
+        System.out.println("Destreza: " + ficha.getDestreza());
+        System.out.println("Constituição: " + ficha.getConstituicao());
+        System.out.println("Carisma: " + ficha.getCarisma());
+        System.out.println("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    }
+
+    private static void editarAtributoPersonagem(Scanner scanner, Ficha ficha, int opcao) {
+        if (opcao < 1 || opcao > 7) {
+            System.out.println("Opcao invalida.");
+            return;
+        }
+
+        System.out.println("Digite um numero inteiro positivo:");
+        int valor = lerInteiroPositivoEstrito(scanner);
+
+        switch (opcao) {
+            case 1:
+                ficha.setInteligencia(valor);
+                break;
+            case 2:
+                ficha.setSabedoria(valor);
+                break;
+            case 3:
+                ficha.setForca(valor);
+                break;
+            case 4:
+                ficha.setDestreza(valor);
+                break;
+            case 5:
+                ficha.setConstituicao(valor);
+                break;
+            case 6:
+                ficha.setCarisma(valor);
+                break;
+            case 7:
+                ficha.setBonusProficiencia(valor);
+                break;
+            default:
+                return;
+        }
+
+        System.out.println("Atributo atualizado com sucesso.");
+    }
+
+    private static int lerInteiroPositivoEstrito(Scanner scanner) {
+        while (true) {
+            String entrada = scanner.nextLine();
+            try {
+                int valor = Integer.parseInt(entrada.trim());
+                if (valor > 0) {
+                    return valor;
+                }
+            } catch (NumberFormatException e) {
+                // continua no loop
+            }
+            System.out.println("Entrada invalida. Digite um numero inteiro positivo.");
+        }
     }
 
     private static void abrirMenuItens(Scanner scanner) {

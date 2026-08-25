@@ -10,7 +10,7 @@ import java.util.List;
 import br.com.ficha.model.Ficha;
 
 public class FichaRepository {
-    private static final String CABECALHO = "nome;idade;sexo;vida;status;raca;classe;nivel;moedaBronze;moedaPrata;moedaOuro";
+    private static final String CABECALHO = "nome;idade;sexo;vida;status;raca;classe;nivel;moedaBronze;moedaPrata;moedaOuro;inteligencia;sabedoria;forca;destreza;constituicao;carisma;bonusProficiencia";
     private final Path caminhoArquivo;
 
     public FichaRepository() {
@@ -46,7 +46,14 @@ public class FichaRepository {
                 parseInteiro(dados[7]),
                 dados.length > 8 ? parseInteiro(dados[8]) : 0,
                 dados.length > 9 ? parseInteiro(dados[9]) : 0,
-                dados.length > 10 ? parseInteiro(dados[10]) : 0
+                dados.length > 10 ? parseInteiro(dados[10]) : 0,
+                dados.length > 11 ? parseInteiro(dados[11]) : 0,
+                dados.length > 12 ? parseInteiro(dados[12]) : 0,
+                dados.length > 13 ? parseInteiro(dados[13]) : 0,
+                dados.length > 14 ? parseInteiro(dados[14]) : 0,
+                dados.length > 15 ? parseInteiro(dados[15]) : 0,
+                dados.length > 16 ? parseInteiro(dados[16]) : 0,
+                dados.length > 17 ? parseInteiro(dados[17]) : 0
             );
         } catch (IOException e) {
             throw new IllegalStateException("Erro ao ler ficha: " + e.getMessage(), e);
