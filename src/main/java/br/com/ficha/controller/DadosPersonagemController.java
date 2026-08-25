@@ -38,8 +38,12 @@ public class DadosPersonagemController {
                 continue;
             }
 
-            if (editar(ficha, opcao)) {
-                service.salvarFicha(ficha);
+            try {
+                if (editar(ficha, opcao)) {
+                    service.salvarFicha(ficha);
+                }
+            } catch (IllegalArgumentException e) {
+                menu.exibirMensagem(e.getMessage());
             }
             menu.exibirMensagem("Pressione Enter para continuar...");
             menu.aguardarEnter();
@@ -52,14 +56,16 @@ public class DadosPersonagemController {
             case 1 -> ficha.setNome(menu.lerTexto("Digite o nome:"));
             case 2 -> ficha.setIdade(menu.lerInteiroNaoNegativo("Digite a idade:"));
             case 3 -> ficha.setSexo(menu.lerTexto("Digite o sexo:"));
-            case 4 -> ficha.setVida(menu.lerInteiroNaoNegativo("Digite a vida:"));
-            case 5 -> ficha.setStatus(menu.lerTexto("Digite o status:"));
-            case 6 -> ficha.setRaca(menu.lerTexto("Digite a raça:"));
-            case 7 -> ficha.setClasse(menu.lerTexto("Digite a classe:"));
-            case 8 -> ficha.setNivel(menu.lerInteiroNaoNegativo("Digite o nível:"));
-            case 9 -> ficha.setMoedaBronze(menu.lerInteiroNaoNegativo("Digite a quantidade de moedas de bronze:"));
-            case 10 -> ficha.setMoedaPrata(menu.lerInteiroNaoNegativo("Digite a quantidade de moedas de prata:"));
-            case 11 -> ficha.setMoedaOuro(menu.lerInteiroNaoNegativo("Digite a quantidade de moedas de ouro:"));
+            case 4 -> service.atualizarVidaMaxima(ficha, menu.lerInteiroNaoNegativo("Digite a vida máxima:"));
+            case 5 -> service.atualizarVidaTemporaria(ficha, menu.lerInteiroNaoNegativo("Digite a vida temporária:"));
+            case 6 -> service.atualizarVidaAtual(ficha, menu.lerInteiroNaoNegativo("Digite a vida atual:"));
+            case 7 -> ficha.setStatus(menu.lerTexto("Digite o status:"));
+            case 8 -> ficha.setRaca(menu.lerTexto("Digite a raça:"));
+            case 9 -> ficha.setClasse(menu.lerTexto("Digite a classe:"));
+            case 10 -> ficha.setNivel(menu.lerInteiroNaoNegativo("Digite o nível:"));
+            case 11 -> ficha.setMoedaBronze(menu.lerInteiroNaoNegativo("Digite a quantidade de moedas de bronze:"));
+            case 12 -> ficha.setMoedaPrata(menu.lerInteiroNaoNegativo("Digite a quantidade de moedas de prata:"));
+            case 13 -> ficha.setMoedaOuro(menu.lerInteiroNaoNegativo("Digite a quantidade de moedas de ouro:"));
             default -> {
                 menu.exibirMensagem("Opção inválida.");
                 return false;

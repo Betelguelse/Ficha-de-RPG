@@ -4,7 +4,9 @@ public class Ficha {
     private String nome;
     private int idade;
     private String sexo;
-    private int vida;
+    private int vidaAtual;
+    private int vidaMaxima;
+    private int vidaTemporaria;
     private String status;
     private String raca;
     private String classe;
@@ -18,7 +20,7 @@ public class Ficha {
         String nome,
         int idade,
         String sexo,
-        int vida,
+        int vidaAtual,
         String status,
         String raca,
         String classe,
@@ -32,12 +34,16 @@ public class Ficha {
         int destreza,
         int constituicao,
         int carisma,
-        int bonusProficiencia
+        int bonusProficiencia,
+        int vidaMaxima,
+        int vidaTemporaria
     ) {
         this.nome = nome;
         this.idade = idade;
         this.sexo = sexo;
-        this.vida = vida;
+        this.vidaAtual = vidaAtual;
+        this.vidaMaxima = vidaMaxima;
+        this.vidaTemporaria = vidaTemporaria;
         this.status = status;
         this.raca = raca;
         this.classe = classe;
@@ -49,7 +55,7 @@ public class Ficha {
     }
 
     public static Ficha padrao() {
-        return new Ficha("", 0, "", 0, "", "", "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        return new Ficha("", 0, "", 0, "", "", "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     public String getNome() {
@@ -77,11 +83,35 @@ public class Ficha {
     }
 
     public int getVida() {
-        return vida;
+        return vidaAtual;
     }
 
     public void setVida(int vida) {
-        this.vida = vida;
+        this.vidaAtual = vida;
+    }
+
+    public int getVidaAtual() {
+        return vidaAtual;
+    }
+
+    public void setVidaAtual(int vidaAtual) {
+        this.vidaAtual = vidaAtual;
+    }
+
+    public int getVidaMaxima() {
+        return vidaMaxima;
+    }
+
+    public void setVidaMaxima(int vidaMaxima) {
+        this.vidaMaxima = vidaMaxima;
+    }
+
+    public int getVidaTemporaria() {
+        return vidaTemporaria;
+    }
+
+    public void setVidaTemporaria(int vidaTemporaria) {
+        this.vidaTemporaria = vidaTemporaria;
     }
 
     public String getStatus() {
@@ -205,7 +235,7 @@ public class Ficha {
             sanitizar(nome),
             String.valueOf(idade),
             sanitizar(sexo),
-            String.valueOf(vida),
+            String.valueOf(vidaAtual),
             sanitizar(status),
             sanitizar(raca),
             sanitizar(classe),
@@ -219,7 +249,9 @@ public class Ficha {
             String.valueOf(atributos.getDestreza()),
             String.valueOf(atributos.getConstituicao()),
             String.valueOf(atributos.getCarisma()),
-            String.valueOf(atributos.getBonusProficiencia())
+            String.valueOf(atributos.getBonusProficiencia()),
+            String.valueOf(vidaMaxima),
+            String.valueOf(vidaTemporaria)
         );
     }
 

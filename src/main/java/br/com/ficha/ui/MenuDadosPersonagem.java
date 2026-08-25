@@ -17,7 +17,11 @@ public class MenuDadosPersonagem {
         System.out.println("Nome: " + ficha.getNome());
         System.out.println("Idade: " + ficha.getIdade());
         System.out.println("Sexo: " + ficha.getSexo());
-        System.out.println("Vida: " + ficha.getVida());
+        System.out.println(
+            "Vida: " + ficha.getVidaAtual()
+                + " + " + ficha.getVidaTemporaria()
+                + " (" + ficha.getVidaMaxima() + ")"
+        );
         System.out.println("Status: " + ficha.getStatus());
         System.out.println("Raça: " + ficha.getRaca());
         System.out.println("Classe: " + ficha.getClasse());
@@ -32,14 +36,16 @@ public class MenuDadosPersonagem {
         System.out.println("1 - Editar nome");
         System.out.println("2 - Editar idade");
         System.out.println("3 - Editar sexo");
-        System.out.println("4 - Editar vida");
-        System.out.println("5 - Editar status");
-        System.out.println("6 - Editar raça");
-        System.out.println("7 - Editar classe");
-        System.out.println("8 - Editar nível");
-        System.out.println("9 - Editar moeda de bronze");
-        System.out.println("10 - Editar moeda de prata");
-        System.out.println("11 - Editar moeda de ouro");
+        System.out.println("4 - Editar vida máxima");
+        System.out.println("5 - Editar vida temporária");
+        System.out.println("6 - Editar vida atual");
+        System.out.println("7 - Editar status");
+        System.out.println("8 - Editar raça");
+        System.out.println("9 - Editar classe");
+        System.out.println("10 - Editar nível");
+        System.out.println("11 - Editar moeda de bronze");
+        System.out.println("12 - Editar moeda de prata");
+        System.out.println("13 - Editar moeda de ouro");
         System.out.println("0 - Voltar");
     }
 
