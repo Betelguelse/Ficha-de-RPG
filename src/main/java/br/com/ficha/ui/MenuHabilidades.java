@@ -16,6 +16,7 @@ public class MenuHabilidades {
         System.out.println("1 - Exibir habilidades");
         System.out.println("2 - Adicionar habilidades");
         System.out.println("3 - Excluir habilidades");
+        System.out.println("4 - Editar habilidade");
         System.out.println("0 - Voltar");
     }
 
@@ -39,26 +40,33 @@ public class MenuHabilidades {
     public Habilidade lerNovaHabilidade() {
         System.out.println("Adicionar nova habilidade");
 
-        System.out.println("Nome: ");
+        System.out.println("Nome (Esc para cancelar): ");
         String nome = lerStringVazia();
+        if (nome == null) return null;
 
-        System.out.print("Nivel: ");
+        System.out.print("Nível (Esc para cancelar): ");
         int nivel = lerInteiro();
+        if (nivel == Integer.MIN_VALUE) return null;
 
-        System.out.print("Tipo: ");
+        System.out.print("Tipo (Esc para cancelar): ");
         String tipo = lerStringVazia();
+        if (tipo == null) return null;
 
-        System.out.print("Alcance: ");
+        System.out.print("Alcance (Esc para cancelar): ");
         String alcance = lerStringVazia();
+        if (alcance == null) return null;
 
-        System.out.print("Recarga: ");
+        System.out.print("Recarga (Esc para cancelar): ");
         String recarga = lerStringVazia();
+        if (recarga == null) return null;
 
-        System.out.print("Custo: ");
+        System.out.print("Custo (Esc para cancelar): ");
         String custo = lerStringVazia();
+        if (custo == null) return null;
 
-        System.out.print("Descricao: ");
+        System.out.print("Descrição (Esc para cancelar): ");
         String descricao = lerStringVazia();
+        if (descricao == null) return null;
 
         return new Habilidade(nome, nivel, tipo, alcance, recarga, custo, descricao);
     }
@@ -81,10 +89,14 @@ public class MenuHabilidades {
     }
 
     private String lerStringVazia() {
-        String entrada = scanner.nextLine().trim();
+        String entrada = scanner.nextLine();
+        if (entrada.equals("\u001B")) return null;
+        entrada = entrada.trim();
         while (entrada.isEmpty()) {
-            System.out.println("Entrada invalida. Digite um texto válido.");
-            entrada = scanner.nextLine().trim();
+            System.out.println("Entrada inválida. Digite um texto válido.");
+            entrada = scanner.nextLine();
+            if (entrada.equals("\u001B")) return null;
+            entrada = entrada.trim();
         }
         return entrada;
     }
@@ -92,10 +104,11 @@ public class MenuHabilidades {
     private int lerInteiro() {
         while (true) {
             String entrada = scanner.nextLine();
+            if (entrada.equals("\u001B")) return Integer.MIN_VALUE;
             try {
                 return Integer.parseInt(entrada.trim());
             } catch (NumberFormatException e) {
-                System.out.println("Entrada invalida. Digite um numero.");
+                System.out.println("Entrada inválida. Digite um número.");
             }
         }
     }

@@ -54,11 +54,11 @@ public class Habilidade {
     @Override
     public String toString() {
         return "Nome: " + nome + "\n"
-            + "Nivel: " + nivel + "\n"
+            + "Nível: " + nivel + "\n"
             + "Tipo: " + tipo + "\n"
             + "Alcance: " + alcance + "\n"
             + "Recarga: " + recarga + "\n"
             + "Custo: " + custo + "\n"
-            + "Descricao: " + descricao;
+            + "Descrição: " + descricao;
     }
 }

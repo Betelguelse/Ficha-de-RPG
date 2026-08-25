@@ -1,14 +1,23 @@
 package br.com.ficha;
 
 import java.util.Scanner;
+import java.util.List;
 
 import br.com.ficha.controller.HabilidadesController;
+import br.com.ficha.controller.ItensController;
 import br.com.ficha.model.Ficha;
+import br.com.ficha.model.Equipamento;
+import br.com.ficha.repository.EquipamentoRepository;
+import br.com.ficha.repository.AnotacaoRepository;
+import br.com.ficha.model.Anotacao;
 import br.com.ficha.repository.FichaRepository;
 import br.com.ficha.repository.HabilidadeRepository;
+import br.com.ficha.repository.ItemRepository;
 import br.com.ficha.service.FichaService;
 import br.com.ficha.service.HabilidadeService;
+import br.com.ficha.service.ItemService;
 import br.com.ficha.ui.MenuHabilidades;
+import br.com.ficha.ui.MenuItens;
 
 public class App {
     private static final int TERMINAL_ROWS = 20;
@@ -35,7 +44,7 @@ public class App {
             menuDadosPersonagem(ficha);
             menuInterativo();
 
-            System.out.println("Selecione uma opcao:");
+            System.out.println("Selecione uma opção:");
             int opcao = lerOpcao(scanner);
 
             switch (opcao) {
@@ -67,7 +76,7 @@ public class App {
                     clear();
                     break;
                 default:
-                    System.out.println("Opcao invalida. Tente novamente.");
+                    System.out.println("Opção inválida. Tente novamente.");
             }
         }
     }
@@ -81,6 +90,9 @@ public class App {
     private static int lerOpcao(Scanner scanner) {
         while (true) {
             String entrada = scanner.nextLine();
+            if (entrada.equals("\u001B")) {
+                return Integer.MIN_VALUE;
+            }
             try {
                 return Integer.parseInt(entrada.trim());
             } catch (NumberFormatException e) {
@@ -372,35 +384,168 @@ public class App {
     }
 
     private static void abrirMenuItens(Scanner scanner) {
-        clear();
-        cabecalho();
-        System.out.println("Area de itens");
-        System.out.println("Em breve voce podera gerenciar os itens da ficha aqui.");
-        System.out.println();
-        System.out.println("Pressione Enter para voltar...");
-        scanner.nextLine();
-        clear();
+        ItemRepository repository = new ItemRepository();
+        ItemService service = new ItemService(repository);
+        MenuItens view = new MenuItens(scanner);
+        ItensController controller = new ItensController(service, view, App::clear, App::cabecalho);
+        controller.iniciar();
     }
 
     private static void abrirMenuEquipamentos(Scanner scanner) {
-        clear();
-        cabecalho();
-        System.out.println("Area de equipamentos");
-        System.out.println("Em breve voce podera gerenciar os equipamentos da ficha aqui.");
-        System.out.println();
-        System.out.println("Pressione Enter para voltar...");
-        scanner.nextLine();
-        clear();
+        EquipamentoRepository repository = new EquipamentoRepository();
+        boolean aberto = true;
+        while (aberto) {
+            clear(); cabecalho();
+            System.out.println("EQUIPAMENTOS");
+            System.out.println("1 - Exibir equipamentos");
+            System.out.println("2 - Adicionar equipamento");
+            System.out.println("3 - Equipar ou desequipar");
+            System.out.println("4 - Configurar permissoes de armadura");
+            System.out.println("5 - Editar equipamento");
+            System.out.println("0 - Voltar");
+            switch (lerOpcao(scanner)) {
+                case 1: exibirEquipamentos(scanner, repository); break;
+                case 2: adicionarEquipamento(scanner, repository); break;
+                case 3: alterarEquipamento(scanner, repository); break;
+                case 4: configurarPermissoes(scanner, repository); break;
+                case 5: editarEquipamento(scanner, repository); break;
+                case 0: aberto = false; clear(); break;
+                default: System.out.println("Opcao invalida."); scanner.nextLine();
+            }
+        }
     }
 
+    private static void exibirEquipamentos(Scanner scanner, EquipamentoRepository repository) {
+        clear(); cabecalho();
+        List<Equipamento> lista = repository.listar();
+        if (lista.isEmpty()) System.out.println("Nenhum equipamento encontrado.");
+        for (int i = 0; i < lista.size(); i++) {
+            Equipamento e = lista.get(i);
+            System.out.println((i + 1) + " - " + e.getNome() + (e.getEquipadoComo().isEmpty() ? "" : " [" + e.getEquipadoComo() + "]"));
+        }
+        if (!lista.isEmpty()) {
+            System.out.println("\nDigite o numero para ver detalhes ou 0 para voltar:");
+            int opcao = lerOpcao(scanner);
+            if (opcao > 0 && opcao <= lista.size()) exibirDetalhesEquipamento(lista.get(opcao - 1));
+        }
+        System.out.println("\nPressione Enter para continuar..."); scanner.nextLine();
+    }
+
+    private static void exibirDetalhesEquipamento(Equipamento e) {
+        System.out.println("\n" + e.getNome());
+        System.out.println("\nTipo: " + e.getTipo());
+        System.out.println("Categoria: " + e.getCategoria());
+        System.out.println("Dano: " + e.getDano());
+        System.out.println("Tipo de Dano: " + e.getTipoDano());
+        System.out.println("Peso: " + e.getPeso() + " kg");
+        System.out.println("Valor: " + e.getValor() + " moedas");
+        System.out.println("Raridade: " + e.getRaridade());
+        System.out.println("Equipado: " + (e.getEquipadoComo().isEmpty() ? "Nao" : "Sim (" + e.getEquipadoComo() + ")"));
+    }
+
+    private static void adicionarEquipamento(Scanner scanner, EquipamentoRepository repository) {
+        clear(); cabecalho(); System.out.println("ADICIONAR EQUIPAMENTO");
+        System.out.println("Nome (Esc para cancelar):"); String nome = lerTexto(scanner); if (nome == null) return;
+        System.out.println("Tipo: 1 - Arma | 2 - Armadura | 3 - Outro | Esc - Cancelar");
+        int tipoOpcao = lerOpcaoAdicionar(scanner, 3); if (tipoOpcao == 0) return; String tipo = tipoOpcao == 1 ? "Arma" : tipoOpcao == 2 ? "Armadura" : "Outro";
+        String categoria;
+        if (tipoOpcao == 2) {
+            System.out.println("Categoria: 1 - Leve | 2 - Media | 3 - Pesada | Esc - Cancelar");
+            int categoriaOpcao = lerOpcaoAdicionar(scanner, 3); if (categoriaOpcao == 0) return; categoria = categoriaOpcao == 1 ? "Leve" : categoriaOpcao == 2 ? "Media" : "Pesada";
+        } else { System.out.println("Categoria (0 para cancelar):"); categoria = lerTexto(scanner); if (categoria == null) return; }
+        System.out.println("Dano (use N/A se nao se aplicar, Esc para cancelar):"); String dano = lerTexto(scanner); if (dano == null) return;
+        System.out.println("Tipo de dano (use N/A se nao se aplicar, Esc para cancelar):"); String tipoDano = lerTexto(scanner); if (tipoDano == null) return;
+        System.out.println("Peso em kg (Esc para cancelar):"); String peso = lerTexto(scanner); if (peso == null) return;
+        System.out.println("Valor em moedas (Esc para cancelar):"); int valor = lerInteiroPositivoOuCancelar(scanner); if (valor == 0) return;
+        System.out.println("Raridade: 1 - Comum | 2 - Incomum | 3 - Raro | 4 - Muito Raro | 5 - Lendario | Esc - Cancelar");
+        String[] raridades = {"Comum", "Incomum", "Raro", "Muito Raro", "Lendario"};
+        int raridadeOpcao = lerOpcaoAdicionar(scanner, 5); if (raridadeOpcao == 0) return; String raridade = raridades[raridadeOpcao - 1];
+        List<Equipamento> lista = repository.listar(); lista.add(new Equipamento(nome, tipo, categoria, dano, tipoDano, peso, valor, raridade, "")); repository.salvar(lista);
+        System.out.println("Equipamento adicionado com sucesso.\nPressione Enter para continuar..."); scanner.nextLine();
+    }
+
+    private static void alterarEquipamento(Scanner scanner, EquipamentoRepository repository) {
+        clear(); cabecalho(); List<Equipamento> lista = repository.listar();
+        if (lista.isEmpty()) { System.out.println("Nenhum equipamento encontrado."); scanner.nextLine(); return; }
+        for (int i = 0; i < lista.size(); i++) System.out.println((i + 1) + " - " + lista.get(i).getNome());
+        System.out.println("Escolha o equipamento ou 0 para voltar:"); int opcao = lerOpcao(scanner);
+        if (opcao < 1 || opcao > lista.size()) return;
+        Equipamento escolhido = lista.get(opcao - 1);
+        if (!escolhido.getEquipadoComo().isEmpty()) { escolhido.setEquipadoComo(""); repository.salvar(lista); System.out.println("Equipamento desequipado."); scanner.nextLine(); return; }
+        String slot;
+        if (escolhido.getTipo().equals("Arma")) {
+            System.out.println("1 - Principal | 2 - Secundaria"); slot = lerOpcaoIntervalo(scanner, 1, 2) == 1 ? "Principal" : "Secundaria";
+        } else if (escolhido.getTipo().equals("Armadura")) {
+            boolean[] p = repository.carregarPermissoes(); int indice = escolhido.getCategoria().equals("Leve") ? 0 : escolhido.getCategoria().equals("Media") ? 1 : 2;
+            if (!p[indice]) { System.out.println("Esta categoria de armadura nao esta permitida."); scanner.nextLine(); return; } slot = "Armadura";
+        } else { System.out.println("Apenas armas e armaduras podem ser equipadas."); scanner.nextLine(); return; }
+        for (Equipamento e : lista) if (e.getEquipadoComo().equals(slot)) { System.out.println("Ja existe equipamento no slot " + slot + ". Desequipe-o primeiro."); scanner.nextLine(); return; }
+        escolhido.setEquipadoComo(slot); repository.salvar(lista); System.out.println("Equipamento equipado como " + slot + "."); scanner.nextLine();
+    }
+
+    private static void configurarPermissoes(Scanner scanner, EquipamentoRepository repository) {
+        boolean[] p = repository.carregarPermissoes();
+        for (int i = 0; i < 3; i++) { String categoria = i == 0 ? "Leve" : i == 1 ? "Media" : "Pesada"; System.out.println("Permitir armadura " + categoria + "? (1 - Sim | 2 - Nao)"); p[i] = lerOpcaoIntervalo(scanner, 1, 2) == 1; }
+        repository.salvarPermissoes(p); System.out.println("Permissoes atualizadas.\nPressione Enter para continuar..."); scanner.nextLine();
+    }
+
+    private static void editarEquipamento(Scanner scanner, EquipamentoRepository repository) {
+        clear(); cabecalho(); List<Equipamento> lista = repository.listar();
+        for (int i = 0; i < lista.size(); i++) System.out.println((i + 1) + " - " + lista.get(i).getNome());
+        if (lista.isEmpty()) { System.out.println("Nenhum equipamento encontrado."); scanner.nextLine(); return; }
+        System.out.println("Escolha o equipamento ou 0 para voltar:"); int indice = lerOpcao(scanner);
+        if (indice < 1 || indice > lista.size()) return;
+        Equipamento e = lista.get(indice - 1);
+        exibirDetalhesEquipamento(e);
+        System.out.println("Campo: 1-Nome 2-Categoria 3-Dano 4-Tipo de dano 5-Peso 6-Valor 7-Raridade");
+        int campo = lerOpcaoIntervalo(scanner, 1, 7);
+        String antigo = campo == 1 ? e.getNome() : campo == 2 ? e.getCategoria() : campo == 3 ? e.getDano() : campo == 4 ? e.getTipoDano() : campo == 5 ? e.getPeso() : campo == 6 ? String.valueOf(e.getValor()) : e.getRaridade();
+        if (campo == 6) { System.out.println("Valor atual: " + antigo + "\nNovo valor:"); e.setValor(lerInteiroPositivoEstrito(scanner)); }
+        else { System.out.println("Valor atual: " + antigo + "\nNovo valor:"); String valor = lerTexto(scanner); if (valor == null) return;
+            if (campo == 1) e.setNome(valor); else if (campo == 2) e.setCategoria(valor); else if (campo == 3) e.setDano(valor); else if (campo == 4) e.setTipoDano(valor); else if (campo == 5) e.setPeso(valor); else e.setRaridade(valor); }
+        repository.salvar(lista); System.out.println("Equipamento atualizado com sucesso."); scanner.nextLine();
+    }
+
+    private static String lerTexto(Scanner scanner) { String texto = scanner.nextLine(); if (texto.equals("\u001B")) return null; texto = texto.trim(); while (texto.isEmpty()) { System.out.println("Entrada invalida. Digite um texto."); texto = scanner.nextLine(); if (texto.equals("\u001B")) return null; texto = texto.trim(); } return texto; }
+    private static int lerOpcaoAdicionar(Scanner scanner, int maximo) { int opcao; do { opcao = lerOpcao(scanner); if (opcao == Integer.MIN_VALUE) return 0; if (opcao < 1 || opcao > maximo) System.out.println("Opcao invalida."); } while (opcao < 1 || opcao > maximo); return opcao; }
+    private static int lerInteiroPositivoOuCancelar(Scanner scanner) { int valor; do { valor = lerOpcao(scanner); if (valor == Integer.MIN_VALUE) return 0; if (valor <= 0) System.out.println("Entrada invalida."); } while (valor <= 0); return valor; }
+    private static int lerOpcaoIntervalo(Scanner scanner, int minimo, int maximo) { int opcao; do { opcao = lerOpcao(scanner); if (opcao < minimo || opcao > maximo) System.out.println("Opcao invalida."); } while (opcao < minimo || opcao > maximo); return opcao; }
+
     private static void abrirMenuAnotacoes(Scanner scanner) {
-        clear();
-        cabecalho();
-        System.out.println("Area de anotacoes");
-        System.out.println("Em breve voce podera registrar observacoes da ficha aqui.");
-        System.out.println();
-        System.out.println("Pressione Enter para voltar...");
-        scanner.nextLine();
-        clear();
+        AnotacaoRepository r = new AnotacaoRepository();
+        boolean aberto = true;
+        while (aberto) {
+            clear(); cabecalho();
+            List<Anotacao> a = r.listar();
+            System.out.println("ANOTAÇÕES\n1 - Exibir anotações\n2 - Adicionar anotação\n3 - Excluir anotação\n4 - Editar anotação\n0 - Voltar");
+            int o = lerOpcao(scanner);
+            if (o == 0) { aberto = false; continue; }
+            if (o == 1) {
+                if (a.isEmpty()) System.out.println("Nenhuma anotação encontrada.");
+                for (int i = 0; i < a.size(); i++) System.out.println((i + 1) + " - " + a.get(i).getTitulo());
+                if (!a.isEmpty()) {
+                    System.out.println("Número ou 0:"); int n = lerOpcao(scanner);
+                    if (n > 0 && n <= a.size()) System.out.println("\nTítulo: " + a.get(n - 1).getTitulo() + "\nTexto: " + a.get(n - 1).getTexto());
+                }
+                System.out.println("\nPressione Enter para continuar..."); scanner.nextLine(); continue;
+            }
+            if (o < 2 || o > 4) continue;
+            if (o == 2) { System.out.println("Título:"); String t = lerTexto(scanner); if (t == null) continue; System.out.println("Texto:"); String x = lerTexto(scanner); if (x == null) continue; a.add(new Anotacao(t, x)); }
+            else {
+                if (a.isEmpty()) {
+                    System.out.println("Nenhuma anotação encontrada.");
+                    System.out.println("Pressione Enter para continuar..."); scanner.nextLine(); continue;
+                }
+                for (int i = 0; i < a.size(); i++) System.out.println((i + 1) + " - " + a.get(i).getTitulo());
+                System.out.println(o == 3 ? "Número da anotação para excluir ou 0:" : "Número da anotação para editar ou 0:");
+                int n = lerOpcao(scanner); if (n < 1 || n > a.size()) continue;
+                if (o == 4) {
+                    System.out.println("Título atual: " + a.get(n - 1).getTitulo() + "\nNovo título:"); String t = lerTexto(scanner); if (t == null) continue;
+                    System.out.println("Texto atual: " + a.get(n - 1).getTexto() + "\nNovo texto:"); String x = lerTexto(scanner); if (x == null) continue;
+                    a.set(n - 1, new Anotacao(t, x)); System.out.println("Anotação atualizada com sucesso.");
+                } else { a.remove(n - 1); System.out.println("Anotação excluída com sucesso."); }
+            }
+            r.salvar(a); System.out.println("Pressione Enter para continuar..."); scanner.nextLine();
+        }
     }
 }

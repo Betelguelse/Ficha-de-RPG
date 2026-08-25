@@ -35,6 +35,13 @@ public class HabilidadeService {
         return removida;
     }
 
+    public void editarHabilidade(int indice, Habilidade habilidade) {
+        List<Habilidade> habilidades = repository.listar();
+        validarIndice(indice, habilidades.size());
+        habilidades.set(indice, habilidade);
+        repository.salvarTodos(habilidades);
+    }
+
     private void validarIndice(int indice, int total) {
         if (indice < 0 || indice >= total) {
             throw new IllegalArgumentException("Indice de habilidade invalido.");

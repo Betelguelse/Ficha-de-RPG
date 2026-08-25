@@ -43,6 +43,9 @@ public class HabilidadesController {
                 case 3:
                     excluirHabilidade();
                     break;
+                case 4:
+                    editarHabilidade();
+                    break;
                 case 0:
                     limparTela.run();
                     executando = false;
@@ -83,6 +86,11 @@ public class HabilidadesController {
 
         try {
             Habilidade novaHabilidade = menuHabilidades.lerNovaHabilidade();
+            if (novaHabilidade == null) {
+                menuHabilidades.exibirMensagem("Adicao cancelada.");
+                aguardarContinuacao();
+                return;
+            }
             habilidadeService.adicionarHabilidade(novaHabilidade);
             menuHabilidades.exibirMensagem("Habilidade adicionada com sucesso!");
         } catch (IllegalArgumentException e) {
@@ -116,6 +124,21 @@ public class HabilidadesController {
             menuHabilidades.exibirMensagem(e.getMessage());
         }
 
+        aguardarContinuacao();
+    }
+
+    private void editarHabilidade() {
+        limparTela.run(); exibirCabecalho.run();
+        List<Habilidade> habilidades = habilidadeService.listarHabilidades(); menuHabilidades.exibirLista(habilidades);
+        if (habilidades.isEmpty()) { aguardarContinuacao(); return; }
+        int opcao = menuHabilidades.lerNumeroHabilidade("\nDigite o numero da habilidade para editar ou 0 para cancelar:");
+        if (opcao == 0) return;
+        try {
+            menuHabilidades.exibirDetalhes(habilidadeService.buscarPorIndice(opcao - 1));
+            Habilidade atualizada = menuHabilidades.lerNovaHabilidade();
+            if (atualizada == null) { menuHabilidades.exibirMensagem("Edicao cancelada."); }
+            else { habilidadeService.editarHabilidade(opcao - 1, atualizada); menuHabilidades.exibirMensagem("Habilidade atualizada com sucesso!"); }
+        } catch (IllegalArgumentException e) { menuHabilidades.exibirMensagem(e.getMessage()); }
         aguardarContinuacao();
     }
 
