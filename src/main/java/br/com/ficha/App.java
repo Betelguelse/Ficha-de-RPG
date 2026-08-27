@@ -1,5 +1,6 @@
 package br.com.ficha;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import br.com.ficha.controller.AnotacoesController;
@@ -8,6 +9,7 @@ import br.com.ficha.controller.DadosPersonagemController;
 import br.com.ficha.controller.EquipamentosController;
 import br.com.ficha.controller.HabilidadesController;
 import br.com.ficha.controller.ItensController;
+import br.com.ficha.controller.InventarioController;
 import br.com.ficha.repository.AnotacaoRepository;
 import br.com.ficha.repository.EquipamentoRepository;
 import br.com.ficha.repository.FichaRepository;
@@ -24,19 +26,37 @@ import br.com.ficha.ui.MenuDadosPersonagem;
 import br.com.ficha.ui.MenuEquipamentos;
 import br.com.ficha.ui.MenuHabilidades;
 import br.com.ficha.ui.MenuItens;
+import br.com.ficha.ui.MenuInventario;
 import br.com.ficha.ui.MenuPrincipal;
+import br.com.ficha.ui.FichaTui;
 
 public class App {
-    private static final int TERMINAL_ROWS = 20;
-    private static final int TERMINAL_COLUMNS = 72;
+    private static final int TERMINAL_ROWS = 36;
+    private static final int TERMINAL_COLUMNS = 96;
     private static final Scanner scanner = new Scanner(System.in);
     private static final FichaService fichaService = new FichaService(new FichaRepository());
 
     public static void main(String[] args) {
         ajustarTamanhoTerminal();
-        iniciar(scanner);
+        try {
+            iniciarTui();
+        } catch (IOException e) {
+            System.out.println("Não foi possível iniciar a TUI. Abrindo o modo clássico.");
+            iniciar(scanner);
+        }
         System.out.println("Saindo do sistema. Até mais!");
         scanner.close();
+    }
+
+    private static void iniciarTui() throws IOException {
+        FichaTui tui = new FichaTui(
+            fichaService,
+            new ItemService(new ItemRepository()),
+            new EquipamentoService(new EquipamentoRepository()),
+            new HabilidadeService(new HabilidadeRepository()),
+            new AnotacaoService(new AnotacaoRepository())
+        );
+        tui.iniciar();
     }
 
     public static void iniciar(Scanner scanner) {
@@ -55,9 +75,10 @@ public class App {
                 case 1 -> abrirDadosPersonagem(scanner);
                 case 2 -> abrirAtributos(scanner);
                 case 3 -> abrirItens(scanner);
-                case 4 -> abrirEquipamentos(scanner);
-                case 5 -> abrirHabilidades(scanner);
-                case 6 -> abrirAnotacoes(scanner);
+                case 4 -> abrirInventario(scanner);
+                case 5 -> abrirEquipamentos(scanner);
+                case 6 -> abrirHabilidades(scanner);
+                case 7 -> abrirAnotacoes(scanner);
                 case 0 -> continuar = false;
                 default -> menuPrincipal.exibirMensagem("Opção inválida. Tente novamente.");
             }
@@ -114,6 +135,16 @@ public class App {
         ItensController controller = new ItensController(
             new ItemService(new ItemRepository()),
             new MenuItens(scanner),
+            App::clear,
+            App::cabecalho
+        );
+        controller.iniciar();
+    }
+
+    private static void abrirInventario(Scanner scanner) {
+        InventarioController controller = new InventarioController(
+            new ItemService(new ItemRepository()),
+            new MenuInventario(scanner),
             App::clear,
             App::cabecalho
         );

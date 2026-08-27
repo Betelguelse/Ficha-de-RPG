@@ -13,9 +13,10 @@ public class MenuPrincipal {
         System.out.println("1 - Editar dados personagem");
         System.out.println("2 - Atributos");
         System.out.println("3 - Itens");
-        System.out.println("4 - Equipamentos");
-        System.out.println("5 - Habilidades");
-        System.out.println("6 - Anotações");
+        System.out.println("4 - Inventário");
+        System.out.println("5 - Equipamentos");
+        System.out.println("6 - Habilidades");
+        System.out.println("7 - Anotações");
         System.out.println("0 - Sair");
     }
 

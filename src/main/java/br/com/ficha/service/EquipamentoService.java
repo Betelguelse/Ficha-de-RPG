@@ -31,6 +31,12 @@ public class EquipamentoService {
     public void editar(int indice, Equipamento equipamento) {
         List<Equipamento> equipamentos = repository.listar();
         validarIndice(indice, equipamentos.size());
+        if ("Armadura".equals(equipamento.getEquipadoComo())) {
+            if (!"Armadura".equals(equipamento.getTipo())) {
+                throw new IllegalArgumentException("Um equipamento no slot Armadura deve ser uma armadura.");
+            }
+            validarPermissaoArmadura(equipamento.getCategoria());
+        }
         equipamentos.set(indice, equipamento);
         repository.salvar(equipamentos);
     }
@@ -65,6 +71,15 @@ public class EquipamentoService {
     }
 
     public void salvarPermissoes(boolean[] permissoes) {
+        for (Equipamento equipamento : repository.listar()) {
+            if ("Armadura".equals(equipamento.getEquipadoComo())
+                && !permissoes[indiceCategoriaArmadura(equipamento.getCategoria())]) {
+                throw new IllegalArgumentException(
+                    "Desequipe a armadura " + equipamento.getNome()
+                        + " antes de remover a permissão da categoria " + equipamento.getCategoria() + "."
+                );
+            }
+        }
         repository.salvarPermissoes(permissoes);
     }
 
@@ -85,16 +100,20 @@ public class EquipamentoService {
     }
 
     private void validarPermissaoArmadura(String categoria) {
-        int indice = switch (categoria) {
+        int indice = indiceCategoriaArmadura(categoria);
+
+        if (!repository.carregarPermissoes()[indice]) {
+            throw new IllegalArgumentException("Esta categoria de armadura não está permitida.");
+        }
+    }
+
+    private int indiceCategoriaArmadura(String categoria) {
+        return switch (categoria) {
             case "Leve" -> 0;
             case "Média", "Media" -> 1;
             case "Pesada" -> 2;
             default -> throw new IllegalArgumentException("Categoria de armadura inválida.");
         };
-
-        if (!repository.carregarPermissoes()[indice]) {
-            throw new IllegalArgumentException("Esta categoria de armadura não está permitida.");
-        }
     }
 
     private void validarIndice(int indice, int total) {

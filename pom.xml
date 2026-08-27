@@ -16,6 +16,14 @@
         <app.name>FichaEmCmd</app.name>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.googlecode.lanterna</groupId>
+            <artifactId>lanterna</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -29,6 +37,27 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>${main.class}</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
